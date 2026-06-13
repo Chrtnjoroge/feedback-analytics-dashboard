@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meadowbrook Family Park Feedback</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #2e7d32;
+            --primary-dark: #1b5e20;
+            --primary-light: #e8f5e9;
+            --star: #ffc107;
+            --text: #2d3436;
+            --muted: #757575;
+            --border: #dcdcdc;
+            --radius: 14px;
+            --shadow: 0 10px 30px rgba(46, 125, 50, 0.12);
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            font-family: 'Quicksand', 'Segoe UI', Arial, sans-serif;
+            margin: 0;
+            padding: 40px 16px;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #e8f5e9 0%, #fff8e1 100%);
+            color: var(--text);
+        }
+
+        .container {
+            max-width: 720px;
+            margin: 0 auto;
+            background: #fff;
+            padding: 32px;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+        }
+
+        nav { text-align: right; margin-bottom: 8px; }
+        nav a {
+            display: inline-block;
+            color: var(--primary-dark);
+            font-weight: 600;
+            text-decoration: none;
+            padding: 6px 14px;
+            border-radius: 20px;
+            background: var(--primary-light);
+            transition: background 0.2s;
+        }
+        nav a:hover { background: #c8e6c9; }
+
+        .hero { text-align: center; margin-bottom: 28px; }
+        .hero-icons { font-size: 32px; letter-spacing: 10px; margin-bottom: 6px; }
+        h1 { margin: 0; color: var(--primary-dark); font-size: 1.8em; font-weight: 700; }
+        .subtitle { color: var(--muted); margin-top: 6px; font-size: 0.95em; }
+
+        fieldset { border: none; margin: 0 0 28px 0; padding: 0; }
+        legend {
+            display: block;
+            width: 100%;
+            font-size: 1.05em;
+            font-weight: 700;
+            color: var(--primary-dark);
+            border-bottom: 2px solid var(--primary-light);
+            padding-bottom: 8px;
+            margin-bottom: 16px;
+        }
+
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+        .form-group { display: flex; flex-direction: column; gap: 6px; margin-bottom: 16px; }
+        .form-group:last-child { margin-bottom: 0; }
+        .form-group.full-width { grid-column: 1 / -1; }
+        .form-group label { font-weight: 600; font-size: 0.9em; }
+
+        input[type="text"], input[type="date"], textarea {
+            width: 100%;
+            padding: 10px 14px;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 0.95em;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+        input[type="text"]:focus, input[type="date"]:focus, textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px var(--primary-light);
+        }
+        textarea { resize: vertical; min-height: 70px; }
+
+        .search-wrap { position: relative; }
+        .search-wrap .icon {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--muted);
+            pointer-events: none;
+        }
+        .search-wrap input { padding-left: 38px; }
+        .hint { font-size: 0.8em; color: var(--muted); }
+
+        .chip-group { display: flex; flex-wrap: wrap; gap: 10px; }
+        .chip {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 9px 16px;
+            border: 2px solid var(--border);
+            border-radius: 24px;
+            cursor: pointer;
+            font-size: 0.9em;
+            transition: all 0.2s;
+            margin: 0;
+            width: auto;
+        }
+        .chip input { display: none; }
+        .chip input:checked + span { font-weight: 700; color: var(--primary-dark); }
+        .chip:has(input:checked) { border-color: var(--primary); background: var(--primary-light); }
+
+        #otherSourceField {
+            display: none;
+            margin-top: 12px;
+            padding: 12px 14px;
+            background: var(--primary-light);
+            border-radius: 8px;
+        }
+        #otherSourceField label { display: block; font-weight: 600; font-size: 0.9em; margin-bottom: 6px; }
+
+        .activity-ratings { display: flex; flex-direction: column; gap: 12px; }
+        .activity-rating {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            padding: 12px 16px;
+            background: #fafafa;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+        }
+        .activity-info { display: flex; align-items: center; gap: 10px; font-weight: 600; }
+        .activity-info .icon { font-size: 1.4em; }
+
+        .star-rating { display: flex; flex-direction: row-reverse; gap: 4px; }
+        .star-rating input { display: none; }
+        .star-rating label {
+            width: auto;
+            margin: 0;
+            font-size: 28px;
+            line-height: 1;
+            color: #d8d8d8;
+            cursor: pointer;
+            transition: color 0.15s ease, transform 0.15s ease;
+        }
+        .star-rating label:hover,
+        .star-rating label:hover ~ label,
+        .star-rating input:checked ~ label {
+            color: var(--star);
+        }
+        .star-rating label:hover { transform: scale(1.15); }
+
+        button {
+            display: block;
+            width: 100%;
+            margin-top: 8px;
+            padding: 14px;
+            background: var(--primary);
+            color: #fff;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.05em;
+            font-weight: 700;
+            font-family: inherit;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.1s;
+        }
+        button:hover { background: var(--primary-dark); }
+        button:active { transform: scale(0.99); }
+
+        @media (max-width: 520px) {
+            .container { padding: 20px; }
+            .form-grid { grid-template-columns: 1fr; }
+            .hero-icons { font-size: 24px; letter-spacing: 6px; }
+            .activity-rating { flex-direction: column; align-items: flex-start; gap: 8px; }
+        }
+    </style>
+    <script>
+        // Bundled map of country name -> nationality (demonym), so the search box
+        // works offline and we can tell country names apart from nationalities.
+        const COUNTRY_TO_NATIONALITY = {
+            "Afghanistan": "Afghan", "Albania": "Albanian", "Algeria": "Algerian",
+            "Andorra": "Andorran", "Angola": "Angolan", "Antigua and Barbuda": "Antiguan",
+            "Argentina": "Argentine", "Armenia": "Armenian", "Australia": "Australian",
+            "Austria": "Austrian", "Azerbaijan": "Azerbaijani", "Bahamas": "Bahamian",
+            "Bahrain": "Bahraini", "Bangladesh": "Bangladeshi", "Barbados": "Barbadian",
+            "Belarus": "Belarusian", "Belgium": "Belgian", "Belize": "Belizean",
+            "Benin": "Beninese", "Bhutan": "Bhutanese", "Bolivia": "Bolivian",
+            "Bosnia and Herzegovina": "Bosnian", "Botswana": "Botswanan", "Brazil": "Brazilian",
+            "Brunei": "Bruneian", "Bulgaria": "Bulgarian", "Burkina Faso": "Burkinabe",
+            "Burundi": "Burundian", "Cabo Verde": "Cabo Verdean", "Cambodia": "Cambodian",
+            "Cameroon": "Cameroonian", "Canada": "Canadian", "Central African Republic": "Central African",
+            "Chad": "Chadian", "Chile": "Chilean", "China": "Chinese", "Colombia": "Colombian",
+            "Comoros": "Comoran", "Congo": "Congolese", "Costa Rica": "Costa Rican",
+            "Croatia": "Croatian", "Cuba": "Cuban", "Cyprus": "Cypriot", "Czechia": "Czech",
+            "Democratic Republic of the Congo": "Congolese", "Denmark": "Danish",
+            "Djibouti": "Djiboutian", "Dominica": "Dominican", "Dominican Republic": "Dominican",
+            "Ecuador": "Ecuadorian", "Egypt": "Egyptian", "El Salvador": "Salvadoran",
+            "Equatorial Guinea": "Equatorial Guinean", "Eritrea": "Eritrean", "Estonia": "Estonian",
+            "Eswatini": "Swazi", "Ethiopia": "Ethiopian", "Fiji": "Fijian", "Finland": "Finnish",
+            "France": "French", "Gabon": "Gabonese", "Gambia": "Gambian", "Georgia": "Georgian",
+            "Germany": "German", "Ghana": "Ghanaian", "Greece": "Greek", "Grenada": "Grenadian",
+            "Guatemala": "Guatemalan", "Guinea": "Guinean", "Guinea-Bissau": "Bissau-Guinean",
+            "Guyana": "Guyanese", "Haiti": "Haitian", "Honduras": "Honduran", "Hungary": "Hungarian",
+            "Iceland": "Icelandic", "India": "Indian", "Indonesia": "Indonesian", "Iran": "Iranian",
+            "Iraq": "Iraqi", "Ireland": "Irish", "Israel": "Israeli", "Italy": "Italian",
+            "Ivory Coast": "Ivorian", "Jamaica": "Jamaican", "Japan": "Japanese", "Jordan": "Jordanian",
+            "Kazakhstan": "Kazakh", "Kenya": "Kenyan", "Kiribati": "I-Kiribati", "Kosovo": "Kosovar",
+            "Kuwait": "Kuwaiti", "Kyrgyzstan": "Kyrgyz", "Laos": "Laotian", "Latvia": "Latvian",
+            "Lebanon": "Lebanese", "Lesotho": "Basotho", "Liberia": "Liberian", "Libya": "Libyan",
+            "Liechtenstein": "Liechtensteiner", "Lithuania": "Lithuanian", "Luxembourg": "Luxembourgish",
+            "Madagascar": "Malagasy", "Malawi": "Malawian", "Malaysia": "Malaysian",
+            "Maldives": "Maldivian", "Mali": "Malian", "Malta": "Maltese",
+            "Marshall Islands": "Marshallese", "Mauritania": "Mauritanian", "Mauritius": "Mauritian",
+            "Mexico": "Mexican", "Micronesia": "Micronesian", "Moldova": "Moldovan",
+            "Monaco": "Monegasque", "Mongolia": "Mongolian", "Montenegro": "Montenegrin",
+            "Morocco": "Moroccan", "Mozambique": "Mozambican", "Myanmar": "Burmese",
+            "Namibia": "Namibian", "Nauru": "Nauruan", "Nepal": "Nepali", "Netherlands": "Dutch",
+            "New Zealand": "New Zealander", "Nicaragua": "Nicaraguan", "Niger": "Nigerien",
+            "Nigeria": "Nigerian", "North Korea": "North Korean", "North Macedonia": "Macedonian",
+            "Norway": "Norwegian", "Oman": "Omani", "Pakistan": "Pakistani", "Palau": "Palauan",
+            "Palestine": "Palestinian", "Panama": "Panamanian", "Papua New Guinea": "Papua New Guinean",
+            "Paraguay": "Paraguayan", "Peru": "Peruvian", "Philippines": "Filipino", "Poland": "Polish",
+            "Portugal": "Portuguese", "Qatar": "Qatari", "Romania": "Romanian", "Russia": "Russian",
+            "Rwanda": "Rwandan", "Saint Kitts and Nevis": "Kittitian", "Saint Lucia": "Saint Lucian",
+            "Saint Vincent and the Grenadines": "Vincentian", "Samoa": "Samoan", "San Marino": "Sammarinese",
+            "Sao Tome and Principe": "Sao Tomean", "Saudi Arabia": "Saudi", "Senegal": "Senegalese",
+            "Serbia": "Serbian", "Seychelles": "Seychellois", "Sierra Leone": "Sierra Leonean",
+            "Singapore": "Singaporean", "Slovakia": "Slovak", "Slovenia": "Slovenian",
+            "Solomon Islands": "Solomon Islander", "Somalia": "Somali", "South Africa": "South African",
+            "South Korea": "South Korean", "South Sudan": "South Sudanese", "Spain": "Spanish",
+            "Sri Lanka": "Sri Lankan", "Sudan": "Sudanese", "Suriname": "Surinamese",
+            "Sweden": "Swedish", "Switzerland": "Swiss", "Syria": "Syrian", "Taiwan": "Taiwanese",
+            "Tajikistan": "Tajik", "Tanzania": "Tanzanian", "Thailand": "Thai",
+            "Timor-Leste": "Timorese", "Togo": "Togolese", "Tonga": "Tongan",
+            "Trinidad and Tobago": "Trinidadian", "Tunisia": "Tunisian", "Turkey": "Turkish",
+            "Turkmenistan": "Turkmen", "Tuvalu": "Tuvaluan", "Uganda": "Ugandan",
+            "Ukraine": "Ukrainian", "United Arab Emirates": "Emirati", "United Kingdom": "British",
+            "United States": "American", "Uruguay": "Uruguayan", "Uzbekistan": "Uzbek",
+            "Vanuatu": "Vanuatuan", "Vatican City": "Vatican", "Venezuela": "Venezuelan",
+            "Vietnam": "Vietnamese", "Yemen": "Yemeni", "Zambia": "Zambian", "Zimbabwe": "Zimbabwean"
+        };
+
+        const NATIONALITIES = [...new Set(Object.values(COUNTRY_TO_NATIONALITY))].sort();
+
+        function fetchNationalities() {
+            const datalist = document.getElementById("nationalities");
+            NATIONALITIES.forEach(nationality => {
+                const option = document.createElement("option");
+                option.value = nationality;
+                datalist.appendChild(option);
+            });
+        };
+
+        // Reject country names (e.g. "Kenya", "Netherlands") and suggest the
+        // matching nationality/demonym (e.g. "Kenyan", "Dutch") instead.
+        function findCountryNameMatch(value) {
+            const lower = value.trim().toLowerCase();
+            return Object.keys(COUNTRY_TO_NATIONALITY).find(country => country.toLowerCase() === lower);
+        }
+
+        function toggleOtherSourceField() {
+            const otherSourceField = document.getElementById("otherSourceField");
+            const otherSourceRadio = document.getElementById("otherSource");
+            otherSourceField.style.display = otherSourceRadio.checked ? "block" : "none";
+        }
+
+        window.onload = fetchNationalities;
+
+        async function submitForm() {
+            if (!validateForm()) return;
+
+            const formData = {
+                date: document.getElementById('date').value,
+                guests: document.getElementById('guests').value,
+                nationality: document.getElementById('nationality').value,
+                source: document.querySelector('input[name="source"]:checked')?.value || '',
+                otherSourceDetails: document.querySelector('input[name="otherSourceDetails"]')?.value || '',
+                ratings: {
+                    natureTrail: document.querySelector('input[name="natureTrail"]:checked')?.value || '',
+                    gardenWalk: document.querySelector('input[name="gardenWalk"]:checked')?.value || '',
+                    pettingZoo: document.querySelector('input[name="pettingZoo"]:checked')?.value || '',
+                    familyGamesArea: document.querySelector('input[name="familyGamesArea"]:checked')?.value || '',
+                    fishingPond: document.querySelector('input[name="fishingPond"]:checked')?.value || ''
+                },
+                teaRating: document.getElementById('teaRating').value,
+                lunchRating: document.getElementById('lunchRating').value,
+                suggestions: document.getElementById('suggestions').value
+            };
+
+            try {
+                const response = await fetch('http://localhost:3000/submit-feedback', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(formData)
+                });
+
+                if (response.ok) {
+                    alert("Feedback submitted successfully!");
+                    document.getElementById("feedbackForm").reset();
+                } else {
+                    const errorData = await response.json();
+                    alert(errorData.error || "Failed to submit feedback. Please try again.");
+                }
+            } catch (error) {
+                alert("Error submitting feedback. Please try again later.");
+            }
+        }
+
+        function validateForm() {
+            const requiredFields = [
+                'date', 'guests', 'nationality', 'teaRating', 'lunchRating', 'suggestions'
+            ];
+            for (const field of requiredFields) {
+                const value = document.getElementById(field).value.trim();
+                if (!value) {
+                    alert(`Please fill in the ${field.replace(/([A-Z])/g, ' $1').toLowerCase()} field.`);
+                    return false;
+                }
+            }
+
+            const nationalityValue = document.getElementById('nationality').value;
+            const matchedCountry = findCountryNameMatch(nationalityValue);
+            if (matchedCountry) {
+                alert(`We're asking for your nationality, not your country. Try "${COUNTRY_TO_NATIONALITY[matchedCountry]}" instead of "${matchedCountry}".`);
+                return false;
+            }
+
+            const sourceChecked = document.querySelector('input[name="source"]:checked');
+            if (!sourceChecked) {
+                alert("Please select how you got to know about us.");
+                return false;
+            }
+
+            const activityFields = [
+                'natureTrail', 'gardenWalk', 'pettingZoo', 'familyGamesArea', 'fishingPond'
+            ];
+            for (const activity of activityFields) {
+                const activityChecked = document.querySelector(`input[name="${activity}"]:checked`);
+                if (!activityChecked) {
+                    alert(`Please rate the ${activity.replace(/([A-Z])/g, ' $1').toLowerCase()} activity.`);
+                    return false;
+                }
+            }
+            return true;
+        }
+    </script>
+</head>
+<body>
+    <div class="container">
+        <nav><a href="dashboard.html">View Analytics Dashboard &rarr;</a></nav>
+        <div class="hero">
+            <div class="hero-icons">🌳 🐐 🎣</div>
+            <h1>Meadowbrook Family Park</h1>
+            <p class="subtitle">Thanks for visiting! We'd love to hear about your day.</p>
+        </div>
+        <form id="feedbackForm">
+            <fieldset>
+                <legend>Visit details</legend>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="date">📅 Date of visit</label>
+                        <input type="date" id="date" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="guests">👥 Number of guests</label>
+                        <input type="text" id="guests" placeholder="e.g. 4" required>
+                    </div>
+                    <div class="form-group full-width">
+                        <label for="nationality">🌍 Nationality</label>
+                        <div class="search-wrap">
+                            <span class="icon">🔍</span>
+                            <input type="text" id="nationality" list="nationalities" placeholder="Start typing your nationality (e.g. Kenyan, Dutch)..." autocomplete="off" required>
+                        </div>
+                        <datalist id="nationalities"></datalist>
+                        <span class="hint">Enter your nationality, e.g. Kenyan, Dutch, Malagasy — not the country name</span>
+                    </div>
+                </div>
+            </fieldset>
+
+            <fieldset>
+                <legend>How did you get to know about us?</legend>
+                <div class="chip-group">
+                    <label class="chip"><input type="radio" name="source" value="Google search" required onclick="toggleOtherSourceField()"><span>🔎 Google search</span></label>
+                    <label class="chip"><input type="radio" name="source" value="Instagram" onclick="toggleOtherSourceField()"><span>📸 Instagram</span></label>
+                    <label class="chip"><input type="radio" name="source" value="Tiktok" onclick="toggleOtherSourceField()"><span>🎵 Tiktok</span></label>
+                    <label class="chip"><input type="radio" name="source" value="Referral" onclick="toggleOtherSourceField()"><span>🤝 Referral</span></label>
+                    <label class="chip"><input type="radio" name="source" value="Other" id="otherSource" onclick="toggleOtherSourceField()"><span>✏️ Other</span></label>
+                </div>
+                <div id="otherSourceField">
+                    <label for="otherSourceDetailsInput">Please specify:</label>
+                    <input type="text" name="otherSourceDetails" id="otherSourceDetailsInput">
+                </div>
+            </fieldset>
+
+            <fieldset>
+                <legend>Rate each activity</legend>
+                <div class="activity-ratings">
+                    <div class="activity-rating">
+                        <span class="activity-info"><span class="icon">🌳</span> Nature Trail</span>
+                        <div class="star-rating">
+                            <input type="radio" id="natureTrail-5" name="natureTrail" value="5"><label for="natureTrail-5" title="5 stars">★</label>
+                            <input type="radio" id="natureTrail-4" name="natureTrail" value="4"><label for="natureTrail-4" title="4 stars">★</label>
+                            <input type="radio" id="natureTrail-3" name="natureTrail" value="3"><label for="natureTrail-3" title="3 stars">★</label>
+                            <input type="radio" id="natureTrail-2" name="natureTrail" value="2"><label for="natureTrail-2" title="2 stars">★</label>
+                            <input type="radio" id="natureTrail-1" name="natureTrail" value="1"><label for="natureTrail-1" title="1 star">★</label>
+                        </div>
+                    </div>
+                    <div class="activity-rating">
+                        <span class="activity-info"><span class="icon">🌷</span> Garden Walk</span>
+                        <div class="star-rating">
+                            <input type="radio" id="gardenWalk-5" name="gardenWalk" value="5"><label for="gardenWalk-5" title="5 stars">★</label>
+                            <input type="radio" id="gardenWalk-4" name="gardenWalk" value="4"><label for="gardenWalk-4" title="4 stars">★</label>
+                            <input type="radio" id="gardenWalk-3" name="gardenWalk" value="3"><label for="gardenWalk-3" title="3 stars">★</label>
+                            <input type="radio" id="gardenWalk-2" name="gardenWalk" value="2"><label for="gardenWalk-2" title="2 stars">★</label>
+                            <input type="radio" id="gardenWalk-1" name="gardenWalk" value="1"><label for="gardenWalk-1" title="1 star">★</label>
+                        </div>
+                    </div>
+                    <div class="activity-rating">
+                        <span class="activity-info"><span class="icon">🐐</span> Petting Zoo</span>
+                        <div class="star-rating">
+                            <input type="radio" id="pettingZoo-5" name="pettingZoo" value="5"><label for="pettingZoo-5" title="5 stars">★</label>
+                            <input type="radio" id="pettingZoo-4" name="pettingZoo" value="4"><label for="pettingZoo-4" title="4 stars">★</label>
+                            <input type="radio" id="pettingZoo-3" name="pettingZoo" value="3"><label for="pettingZoo-3" title="3 stars">★</label>
+                            <input type="radio" id="pettingZoo-2" name="pettingZoo" value="2"><label for="pettingZoo-2" title="2 stars">★</label>
+                            <input type="radio" id="pettingZoo-1" name="pettingZoo" value="1"><label for="pettingZoo-1" title="1 star">★</label>
+                        </div>
+                    </div>
+                    <div class="activity-rating">
+                        <span class="activity-info"><span class="icon">🎮</span> Family Games Area</span>
+                        <div class="star-rating">
+                            <input type="radio" id="familyGamesArea-5" name="familyGamesArea" value="5"><label for="familyGamesArea-5" title="5 stars">★</label>
+                            <input type="radio" id="familyGamesArea-4" name="familyGamesArea" value="4"><label for="familyGamesArea-4" title="4 stars">★</label>
+                            <input type="radio" id="familyGamesArea-3" name="familyGamesArea" value="3"><label for="familyGamesArea-3" title="3 stars">★</label>
+                            <input type="radio" id="familyGamesArea-2" name="familyGamesArea" value="2"><label for="familyGamesArea-2" title="2 stars">★</label>
+                            <input type="radio" id="familyGamesArea-1" name="familyGamesArea" value="1"><label for="familyGamesArea-1" title="1 star">★</label>
+                        </div>
+                    </div>
+                    <div class="activity-rating">
+                        <span class="activity-info"><span class="icon">🎣</span> Fishing Pond</span>
+                        <div class="star-rating">
+                            <input type="radio" id="fishingPond-5" name="fishingPond" value="5"><label for="fishingPond-5" title="5 stars">★</label>
+                            <input type="radio" id="fishingPond-4" name="fishingPond" value="4"><label for="fishingPond-4" title="4 stars">★</label>
+                            <input type="radio" id="fishingPond-3" name="fishingPond" value="3"><label for="fishingPond-3" title="3 stars">★</label>
+                            <input type="radio" id="fishingPond-2" name="fishingPond" value="2"><label for="fishingPond-2" title="2 stars">★</label>
+                            <input type="radio" id="fishingPond-1" name="fishingPond" value="1"><label for="fishingPond-1" title="1 star">★</label>
+                        </div>
+                    </div>
+                </div>
+            </fieldset>
+
+            <fieldset>
+                <legend>Tell us more</legend>
+                <div class="form-group">
+                    <label for="teaRating">🍵 Tea rating</label>
+                    <textarea id="teaRating" rows="3" placeholder="Rate the tea"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="lunchRating">🍽️ Lunch rating</label>
+                    <textarea id="lunchRating" rows="3" placeholder="Rate / comment on the lunch"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="suggestions">💡 Suggestions</label>
+                    <textarea id="suggestions" rows="3" required placeholder="Anything we could do better?"></textarea>
+                </div>
+            </fieldset>
+
+            <button type="button" onclick="submitForm()">Submit Feedback</button>
+        </form>
+    </div>
+</body>
+</html>

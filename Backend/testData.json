@@ -1,0 +1,36 @@
+[
+    {
+        "date": "2024-03-24",
+        "guests": 4,
+        "nationality": "Kenyan",
+        "source": "Google search",
+        "otherSourceDetails": "",
+        "ratings": {
+            "natureTrail": 5,
+            "gardenWalk": 4,
+            "pettingZoo": 3,
+            "familyGamesArea": 5,
+            "fishingPond": 4
+        },
+        "teaRating": "Excellent",
+        "lunchRating": "Good variety",
+        "suggestions": "More seating would be great!"
+    },
+    {
+        "date": "2024-03-25",
+        "guests": 2,
+        "nationality": "American",
+        "source": "Instagram",
+        "otherSourceDetails": "",
+        "ratings": {
+            "natureTrail": 4,
+            "gardenWalk": 5,
+            "pettingZoo": 4,
+            "familyGamesArea": 3,
+            "fishingPond": 5
+        },
+        "teaRating": "Good",
+        "lunchRating": "Loved the variety",
+        "suggestions": "Add more signage for directions."
+    }
+]

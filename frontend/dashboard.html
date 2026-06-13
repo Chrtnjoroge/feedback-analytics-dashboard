@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meadowbrook Family Park Analytics Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --bg: #0b1220;
+            --bg-end: #101b30;
+            --card: #141d33;
+            --border: #263252;
+            --text: #e6ebf5;
+            --muted: #8694b8;
+            --grid: #233047;
+            --accent: #2dd4bf;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
+            margin: 0;
+            padding: 32px 16px;
+            min-height: 100vh;
+            background: linear-gradient(160deg, var(--bg) 0%, var(--bg-end) 100%);
+            color: var(--text);
+        }
+
+        .container { max-width: 1200px; margin: 0 auto; }
+
+        nav { text-align: right; margin-bottom: 16px; }
+        nav a {
+            display: inline-block;
+            color: var(--accent);
+            font-weight: 600;
+            font-size: 0.9em;
+            text-decoration: none;
+            padding: 7px 16px;
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            transition: border-color 0.2s, background 0.2s;
+        }
+        nav a:hover { background: var(--card); border-color: var(--accent); }
+
+        header { text-align: center; margin-bottom: 28px; }
+        h1 {
+            margin: 0;
+            font-size: 1.9em;
+            font-weight: 700;
+            letter-spacing: 0.02em;
+        }
+        #summary { color: var(--muted); margin-top: 8px; font-size: 0.95em; }
+
+        #emptyState {
+            text-align: center;
+            color: var(--muted);
+            padding: 60px 20px;
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+        }
+
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+        .kpi-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 18px 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .kpi-label {
+            font-size: 0.75em;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            font-weight: 600;
+        }
+        .kpi-value {
+            font-size: 1.6em;
+            font-weight: 700;
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--accent);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .charts {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(420px, 1fr));
+            gap: 20px;
+        }
+        .chart-box {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 18px;
+            height: 380px;
+            display: flex;
+            flex-direction: column;
+        }
+        .chart-box h2 {
+            margin: 0 0 12px 0;
+            font-size: 0.85em;
+            font-weight: 700;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+        .chart-container { position: relative; flex: 1; min-height: 0; }
+
+        @media (max-width: 600px) {
+            .charts { grid-template-columns: 1fr; }
+            .chart-box { height: 320px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <nav><a href="index.html">&larr; Back to Feedback Form</a></nav>
+        <header>
+            <h1>📊 Meadowbrook Family Park Analytics</h1>
+            <p id="summary">Loading feedback data...</p>
+        </header>
+
+        <div id="emptyState" style="display: none;">
+            No feedback submitted yet. Fill out the feedback form to see charts here.
+        </div>
+
+        <div class="kpi-grid" id="kpis" style="display: none;">
+            <div class="kpi-card">
+                <span class="kpi-label">Total Responses</span>
+                <span class="kpi-value" id="kpiTotal">--</span>
+            </div>
+            <div class="kpi-card">
+                <span class="kpi-label">Avg. Activity Rating</span>
+                <span class="kpi-value" id="kpiAvgRating">--</span>
+            </div>
+            <div class="kpi-card">
+                <span class="kpi-label">Top Activity</span>
+                <span class="kpi-value" id="kpiTopActivity">--</span>
+            </div>
+            <div class="kpi-card">
+                <span class="kpi-label">Top Discovery Source</span>
+                <span class="kpi-value" id="kpiTopSource">--</span>
+            </div>
+        </div>
+
+        <div class="charts" id="charts" style="display: none;">
+            <div class="chart-box">
+                <h2>Average Activity Ratings</h2>
+                <div class="chart-container"><canvas id="activityChart"></canvas></div>
+            </div>
+            <div class="chart-box">
+                <h2>Discovery Source</h2>
+                <div class="chart-container"><canvas id="sourceChart"></canvas></div>
+            </div>
+            <div class="chart-box">
+                <h2>Visitor Nationality</h2>
+                <div class="chart-container"><canvas id="nationalityChart"></canvas></div>
+            </div>
+            <div class="chart-box">
+                <h2>Number of Guests Over Time</h2>
+                <div class="chart-container"><canvas id="guestsChart"></canvas></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:3000';
+
+        const ACTIVITIES = [
+            { key: 'nature_trail', label: 'Nature Trail' },
+            { key: 'garden_walk', label: 'Garden Walk' },
+            { key: 'petting_zoo', label: 'Petting Zoo' },
+            { key: 'family_games_area', label: 'Family Games Area' },
+            { key: 'fishing_pond', label: 'Fishing Pond' },
+        ];
+
+        // Dark, "technical" data-viz palette
+        const GRID_COLOR = '#233047';
+        const TEXT_MUTED = '#8694b8';
+        const TEXT_LIGHT = '#cbd5e1';
+        const ACCENT_TEAL = '#2dd4bf';
+        const ACCENT_BLUE = '#38bdf8';
+        const ACCENT_VIOLET = '#a78bfa';
+        const CATEGORY_PALETTE = ['#38bdf8', '#a78bfa', '#fb7185', '#fbbf24', '#4ade80', '#2dd4bf', '#f472b6', '#facc15'];
+
+        Chart.defaults.color = TEXT_MUTED;
+        Chart.defaults.borderColor = GRID_COLOR;
+        Chart.defaults.font.family = "'Inter', 'Segoe UI', sans-serif";
+
+        function average(values) {
+            return values.reduce((sum, v) => sum + v, 0) / values.length;
+        }
+
+        function countBy(rows, field) {
+            const counts = {};
+            for (const row of rows) {
+                const key = row[field] || 'Unknown';
+                counts[key] = (counts[key] || 0) + 1;
+            }
+            return Object.entries(counts).sort((a, b) => b[1] - a[1]);
+        }
+
+        function renderRadarChart(canvasId, label, labels, data) {
+            new Chart(document.getElementById(canvasId), {
+                type: 'radar',
+                data: {
+                    labels,
+                    datasets: [{
+                        label,
+                        data,
+                        backgroundColor: 'rgba(45, 212, 191, 0.25)',
+                        borderColor: ACCENT_TEAL,
+                        pointBackgroundColor: ACCENT_TEAL,
+                        borderWidth: 2,
+                    }],
+                },
+                options: {
+                    maintainAspectRatio: false,
+                    scales: {
+                        r: {
+                            min: 0,
+                            max: 5,
+                            ticks: { stepSize: 1, backdropColor: 'transparent', color: TEXT_MUTED },
+                            grid: { color: GRID_COLOR },
+                            angleLines: { color: GRID_COLOR },
+                            pointLabels: { color: TEXT_LIGHT, font: { size: 11 } },
+                        },
+                    },
+                    plugins: { legend: { display: false } },
+                },
+            });
+        }
+
+        function renderDoughnutChart(canvasId, labels, data) {
+            new Chart(document.getElementById(canvasId), {
+                type: 'doughnut',
+                data: {
+                    labels,
+                    datasets: [{
+                        data,
+                        backgroundColor: CATEGORY_PALETTE,
+                        borderColor: '#141d33',
+                        borderWidth: 2,
+                    }],
+                },
+                options: {
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: { color: TEXT_LIGHT, boxWidth: 12, padding: 10, font: { size: 11 } },
+                        },
+                    },
+                },
+            });
+        }
+
+        function renderBarChart(canvasId, label, labels, data, color) {
+            new Chart(document.getElementById(canvasId), {
+                type: 'bar',
+                data: {
+                    labels,
+                    datasets: [{ label, data, backgroundColor: color, borderRadius: 4, maxBarThickness: 40 }],
+                },
+                options: {
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: { ticks: { maxRotation: 45, minRotation: 0 }, grid: { display: false } },
+                        y: { beginAtZero: true, ticks: { precision: 0 }, grid: { color: GRID_COLOR } },
+                    },
+                    plugins: { legend: { display: false } },
+                },
+            });
+        }
+
+        function renderLineChart(canvasId, label, labels, data) {
+            const ctx = document.getElementById(canvasId).getContext('2d');
+            const gradient = ctx.createLinearGradient(0, 0, 0, 280);
+            gradient.addColorStop(0, 'rgba(56, 189, 248, 0.35)');
+            gradient.addColorStop(1, 'rgba(56, 189, 248, 0)');
+
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels,
+                    datasets: [{
+                        label,
+                        data,
+                        borderColor: ACCENT_BLUE,
+                        backgroundColor: gradient,
+                        pointBackgroundColor: ACCENT_BLUE,
+                        pointRadius: 2,
+                        tension: 0.3,
+                        fill: true,
+                    }],
+                },
+                options: {
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: { ticks: { maxTicksLimit: 8 }, grid: { display: false } },
+                        y: { beginAtZero: true, grid: { color: GRID_COLOR } },
+                    },
+                    plugins: { legend: { display: false } },
+                },
+            });
+        }
+
+        async function loadDashboard() {
+            let rows;
+            try {
+                const response = await fetch(`${API_BASE}/feedback-data`);
+                rows = await response.json();
+            } catch (err) {
+                document.getElementById('summary').textContent =
+                    'Could not load feedback data. Is the backend running on http://localhost:3000?';
+                return;
+            }
+
+            if (!rows.length) {
+                document.getElementById('summary').style.display = 'none';
+                document.getElementById('emptyState').style.display = 'block';
+                return;
+            }
+
+            const dates = rows.map((r) => r.date).sort();
+            document.getElementById('summary').textContent =
+                `Data from ${dates[0]} to ${dates[dates.length - 1]}`;
+
+            // Average rating per activity
+            const activityLabels = ACTIVITIES.map((a) => a.label);
+            const activityAverages = ACTIVITIES.map((a) => average(rows.map((r) => Number(r[a.key]))));
+            renderRadarChart('activityChart', 'Average rating (1-5)', activityLabels, activityAverages);
+
+            // Discovery source
+            const sourceCounts = countBy(rows, 'source');
+            renderDoughnutChart('sourceChart', sourceCounts.map((c) => c[0]), sourceCounts.map((c) => c[1]));
+
+            // Nationality
+            const nationalityCounts = countBy(rows, 'nationality');
+            renderBarChart('nationalityChart', 'Number of visitors', nationalityCounts.map((c) => c[0]), nationalityCounts.map((c) => c[1]), ACCENT_VIOLET);
+
+            // Guests over time
+            const sortedRows = [...rows].sort((a, b) => a.date.localeCompare(b.date));
+            renderLineChart('guestsChart', 'Guests', sortedRows.map((r) => r.date), sortedRows.map((r) => Number(r.guests)));
+
+            // KPI summary cards
+            const overallAvg = average(activityAverages);
+            const topActivity = activityLabels[activityAverages.indexOf(Math.max(...activityAverages))];
+            document.getElementById('kpiTotal').textContent = rows.length;
+            document.getElementById('kpiAvgRating').textContent = `${overallAvg.toFixed(2)} / 5`;
+            document.getElementById('kpiTopActivity').textContent = topActivity;
+            document.getElementById('kpiTopSource').textContent = sourceCounts[0][0];
+            document.getElementById('kpis').style.display = 'grid';
+            document.getElementById('charts').style.display = 'grid';
+        }
+
+        loadDashboard();
+    </script>
+</body>
+</html>
