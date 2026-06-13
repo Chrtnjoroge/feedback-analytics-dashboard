@@ -1,8 +1,8 @@
-# Meadowbrook Family Park — Feedback & Analytics
+# Meadowbrook Family Park-Feedback & Analytics
 
 A visitor feedback system for a family park featuring a nature trail, garden walk, petting zoo, family games area, and a fishing pond. Visitors fill out a feedback form after their visit, responses are stored in a CSV file, and the data can be explored live in a dashboard or analyzed in depth with a Jupyter notebook.
 
-The project is deliberately minimal — no database, just a small Express API, a CSV file, and static HTML pages — so the whole stack is easy to read end to end.
+The project is deliberately minimal, no database, just a small Express API, a CSV file, and static HTML pages, so the whole stack is easy to read end to end.
 
 ## Screenshots
 
@@ -39,10 +39,10 @@ feedback-analytics-dashboard/
 
 ## How it fits together
 
-1. **Feedback form** (`frontend/index.html`) — visitors rate 5 activities (Nature Trail, Garden Walk, Petting Zoo, Family Games Area, Fishing Pond), pick how they heard about us, and leave comments. On submit, it `POST`s JSON to `http://localhost:3000/submit-feedback`.
+1. **Feedback form** (`frontend/index.html`) - visitors rate 5 activities (Nature Trail, Garden Walk, Petting Zoo, Family Games Area, Fishing Pond), pick how they heard about us, and leave comments. On submit, it `POST`s JSON to `http://localhost:3000/submit-feedback`.
 2. **Backend** (`Backend/index.js`) — a small Express server that validates each submission, appends it as a row to `Backend/feedback.csv`, and serves the data back as JSON via `GET /feedback-data`.
-3. **Dashboard** (`frontend/dashboard.html`) — fetches `/feedback-data` and renders live charts (average rating per activity, discovery source, visitor nationality, guests over time) with Chart.js.
-4. **Analytics notebook** (`analytics/feedback_analysis.ipynb`) — reads the same CSV with pandas for a deeper look: summary stats, the same charts via matplotlib/seaborn, VADER sentiment scores for the free-text fields (`tea_rating`, `lunch_rating`, `suggestions`), and ideas for further analysis.
+3. **Dashboard** (`frontend/dashboard.html`) - fetches `/feedback-data` and renders live charts (average rating per activity, discovery source, visitor nationality, guests over time) with Chart.js.
+4. **Analytics notebook** (`analytics/feedback_analysis.ipynb`) - reads the same CSV with pandas for a deeper look: summary stats, the same charts via matplotlib/seaborn, VADER sentiment scores for the free-text fields (`tea_rating`, `lunch_rating`, `suggestions`), and ideas for further analysis.
 
 ## Running it locally
 
@@ -60,10 +60,10 @@ This starts the API on `http://localhost:3000` and reads/writes `Backend/feedbac
 
 With the backend running, open these files directly in your browser (no build step or web server needed):
 
-- `frontend/index.html` — submit feedback (new entries are appended to `feedback.csv` and show up on the dashboard)
-- `frontend/dashboard.html` — view the live analytics dashboard
+- `frontend/index.html` - submit feedback (new entries are appended to `feedback.csv` and show up on the dashboard)
+- `frontend/dashboard.html` - view the live analytics dashboard
 
-> Note: the nationality field uses a bundled country-to-nationality map in `index.html`, so the form works fully offline and validates that visitors enter a nationality (e.g. "Kenyan", "Dutch") rather than a country name (e.g. "Kenya", "Netherlands") — suggesting the correct demonym if they don't, to keep the data consistent for analysis. The backend allows requests from any origin, so opening the HTML files directly (`file://`) works fine.
+> Note: the nationality field uses a bundled country-to-nationality map in `index.html`, so the form works fully offline and validates that visitors enter a nationality (e.g. "Kenyan", "Dutch") rather than a country name (e.g. "Kenya", "Netherlands") - suggesting the correct demonym if they don't, to keep the data consistent for analysis. The backend allows requests from any origin, so opening the HTML files directly (`file://`) works fine.
 
 ### 3. Run the analytics notebook (optional)
 
@@ -107,7 +107,7 @@ node generate_sample_data.js
 
 ## Validation & security
 
-- **Server-side validation** (`Backend/index.js`) — `POST /submit-feedback` checks that:
+- **Server-side validation** (`Backend/index.js`) - `POST /submit-feedback` checks that:
   - `date` is in `YYYY-MM-DD` format
   - `guests` is a positive whole number
   - `nationality` is non-empty
@@ -116,8 +116,8 @@ node generate_sample_data.js
   - `teaRating`, `lunchRating`, and `suggestions` are non-empty
 
   Invalid requests get a `400` with a descriptive error instead of crashing the server or writing a malformed row — this protects `feedback.csv` even if someone calls the API directly instead of using the form.
-- **Nationality vs. country check** (`frontend/index.html`) — a bundled country-to-nationality map blocks visitors from typing a country name (e.g. "Kenya") where a nationality (e.g. "Kenyan") is expected, suggesting the correct demonym instead.
-- **CSV-injection guard** (`csvEscape` in `Backend/index.js`) — any value starting with `=`, `+`, `-`, or `@` gets a leading `'`, so a comment like `=SOME(FORMULA)` is stored as harmless text instead of being executed as a formula when `feedback.csv` is opened in Excel or Google Sheets.
+- **Nationality vs. country check** (`frontend/index.html`) - a bundled country-to-nationality map blocks visitors from typing a country name (e.g. "Kenya") where a nationality (e.g. "Kenyan") is expected, suggesting the correct demonym instead.
+- **CSV-injection guard** (`csvEscape` in `Backend/index.js`) - any value starting with `=`, `+`, `-`, or `@` gets a leading `'`, so a comment like `=SOME(FORMULA)` is stored as harmless text instead of being executed as a formula when `feedback.csv` is opened in Excel or Google Sheets.
 
 ## Testing
 
